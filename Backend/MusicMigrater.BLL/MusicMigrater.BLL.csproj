@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MusicMigrater.DAL\MusicMigrater.DAL.csproj" />
+    <ProjectReference Include="..\MusicMigrater.Domain\MusicMigrater.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

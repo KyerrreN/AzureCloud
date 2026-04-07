@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.Extensions.Logging.AutoLoggerMessage</InterceptorsNamespaces>
+  </PropertyGroup>
+</Project>

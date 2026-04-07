@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="MusicMigrater.BLL/MusicMigrater.BLL.csproj" Id="858e1ff3-3881-4dcb-855a-cd6d9aa7e5c4" />
+  <Project Path="MusicMigrater.DAL/MusicMigrater.DAL.csproj" Id="9d7d8085-d524-4c6f-86a9-8a84ba32d9f3" />
+  <Project Path="MusicMigrater.Domain/MusicMigrater.Domain.csproj" Id="8ef174bf-874b-438d-8576-f413d74ad961" />
+  <Project Path="MusicMigrater/MusicMigrater.csproj" />
+</Solution>
