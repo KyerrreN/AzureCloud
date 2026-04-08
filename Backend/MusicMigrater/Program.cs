@@ -1,9 +1,11 @@
 using FluentValidation;
 using Hangfire;
-using Hangfire.Storage.SQLite;
+using Hangfire.SqlServer;
+using Microsoft.EntityFrameworkCore;
 using MusicMigrater.BLL.DI;
 using MusicMigrater.BLL.Handlers;
 using MusicMigrater.BLL.Options;
+using MusicMigrater.DAL.Context;
 using MusicMigrater.DAL.DI;
 using MusicMigrater.Endpoints;
 using MusicMigrater.Maping;
@@ -44,26 +46,52 @@ builder.Services.AddCors(opt =>
 
 builder.Services.AddOpenApi();
 
-var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection");
+var hangfireConnectionString = builder.Configuration.GetConnectionString("AzureDefaultConnection");
 
 builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
-    .UseSQLiteStorage(hangfireConnectionString, new SQLiteStorageOptions
+    .UseSqlServerStorage(hangfireConnectionString, new SqlServerStorageOptions
     {
-        InvisibilityTimeout = TimeSpan.FromDays(5),
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
     }));
 
 builder.Services.AddHangfireServer(opt =>
 {
-    // SQLite is not optimized for multiple
-    // writes at the same time. Increase/delete if migrating
-    // to another DB
     opt.WorkerCount = 1;
 });
 
 var app = builder.Build();
+
+// todo: extract in method
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        // todo: high-performance logging
+        logger.LogInformation("Start migration");
+
+        var context = services.GetRequiredService<AppDbContext>();
+
+        // todo: high-performance logging
+        context.Database.Migrate();
+
+        logger.LogInformation("End migration. Success");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error while applying migrations on startup");
+        throw;
+    }
+}
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();

@@ -21,20 +21,5 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(modelBuilder);
-
-        if (Database.IsSqlite())
-        {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                var properties = entityType.GetProperties()
-                    .Where(p => p.ClrType == typeof(DateTimeOffset)
-                             || p.ClrType == typeof(DateTimeOffset?));
-
-                foreach (var property in properties)
-                {
-                    property.SetValueConverter(new DateTimeOffsetToStringConverter());
-                }
-            }
-        }
     }
 }
