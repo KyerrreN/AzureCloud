@@ -1,6 +1,7 @@
 using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using MusicMigrater.BLL.DI;
 using MusicMigrater.BLL.Handlers;
@@ -90,6 +91,12 @@ using (var scope = app.Services.CreateScope())
         throw;
     }
 }
+
+// request pipeline
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
