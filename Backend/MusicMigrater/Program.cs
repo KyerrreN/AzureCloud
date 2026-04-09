@@ -95,7 +95,9 @@ using (var scope = app.Services.CreateScope())
 // request pipeline
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    KnownIPNetworks = { },
+    KnownProxies = { }
 });
 
 app.UseMiddleware<RequestLoggingMiddleware>();
