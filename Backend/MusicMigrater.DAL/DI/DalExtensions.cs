@@ -11,10 +11,10 @@ public static class DalExtensions
     {
         public IServiceCollection RegisterDalLayer(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("AzureDefaultConnection");
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(connectionString));
+                options.UseSqlServer(connectionString));
 
             return services;
         }

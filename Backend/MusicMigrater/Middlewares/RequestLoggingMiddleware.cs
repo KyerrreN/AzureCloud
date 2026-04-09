@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using MusicMigrater.Domain.Logging;
+﻿using MusicMigrater.Domain.Logging;
+using System.Diagnostics;
 
 namespace MusicMigrater.Middlewares;
 
@@ -13,14 +13,9 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggi
 
         logger.LogRequestStarted(method, path);
 
-        try
-        {
-            await next(context);
-        }
-        finally
-        {
-            var elapsed = Stopwatch.GetElapsedTime(startTime);
-            logger.LogRequestFinished(method, path, elapsed.TotalMilliseconds, context.Response.StatusCode);
-        }
+        await next(context);
+
+        var elapsed = Stopwatch.GetElapsedTime(startTime);
+        logger.LogRequestFinished(method, path, elapsed.TotalMilliseconds, context.Response.StatusCode);
     }
 }
