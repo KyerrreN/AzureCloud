@@ -95,6 +95,18 @@ public static partial class HighPerformanceLogging
         Message = "Initiated sleep after {requestCount}. Duration: {sleepDurationInSeconds} seconds")]
     public static partial void LogInitiateSyncSleep(this ILogger logger, int requestCount, int sleepDurationInSeconds);
 
+    [LoggerMessage(
+        EventId = 1016,
+        Level = LogLevel.Information,
+        Message = "Starting applying database migrations...")]
+    public static partial void LogStartApplyingMigrations(this ILogger logger);
+
+    [LoggerMessage(
+        EventId = 1017,
+        Level = LogLevel.Information,
+        Message = "Finished applying database migrations.")]
+    public static partial void LogFinishApplyingMigrations(this ILogger logger);
+
     // WARNINGS
     [LoggerMessage(
         EventId = 2001,
@@ -169,4 +181,10 @@ public static partial class HighPerformanceLogging
         Level = LogLevel.Critical,
         Message = "Hit rate limit. Aborting")]
     public static partial void LogHitRateLimiter(this ILogger logger);
+
+    [LoggerMessage(
+        EventId = 5002,
+        Level = LogLevel.Critical,
+        Message = "Error while applying migrations on startup")]
+    public static partial void LogFailedToApplyMigrationsOnStartup(this ILogger logger, Exception ex);
 }

@@ -7,6 +7,7 @@ using MusicMigrater.BLL.Handlers;
 using MusicMigrater.BLL.Options;
 using MusicMigrater.DAL.Context;
 using MusicMigrater.DAL.DI;
+using MusicMigrater.Domain.Logging;
 using MusicMigrater.Endpoints;
 using MusicMigrater.Maping;
 using MusicMigrater.Middlewares;
@@ -16,7 +17,6 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 MapsterConfigApi.Configure();
 
 var corsSettings = builder.Configuration.GetRequiredSection(CorsOptions.SectionName);
@@ -68,7 +68,7 @@ builder.Services.AddHangfireServer(opt =>
 
 var app = builder.Build();
 
-// todo: extract in method
+// auto-apply migrations on startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -76,19 +76,17 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        // todo: high-performance logging
-        logger.LogInformation("Start migration");
+        logger.LogStartApplyingMigrations();
 
         var context = services.GetRequiredService<AppDbContext>();
 
-        // todo: high-performance logging
         context.Database.Migrate();
 
-        logger.LogInformation("End migration. Success");
+        logger.LogFinishApplyingMigrations();
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Error while applying migrations on startup");
+        logger.LogFailedToApplyMigrationsOnStartup(ex);
         throw;
     }
 }
