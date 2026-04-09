@@ -45,7 +45,26 @@ builder.Services.AddCors(opt =>
     });
 });
 
-builder.Services.AddOpenApi();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        var httpContextAccessor = context.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+        var request = httpContextAccessor.HttpContext?.Request;
+
+        if (request != null)
+        {
+            var scheme = request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? request.Scheme;
+            var host = request.Headers["X-Forwarded-Host"].FirstOrDefault() ?? request.Host.Value;
+
+            document.Servers = [new() { Url = $"{scheme}://{host}" }];
+        }
+
+        return Task.CompletedTask;
+    });
+});
 
 var hangfireConnectionString = builder.Configuration.GetConnectionString("AzureDefaultConnection");
 
