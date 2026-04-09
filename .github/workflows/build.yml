@@ -23,5 +23,5 @@ jobs:
       - name: Build and push
         run: |
           IMAGE_ID=$(echo "ghcr.io/${{ github.repository }}/music-migrater-backend" | tr '[:upper:]' '[:lower:]')
-          docker build -f MusicMigrater/Dockerfile -t $IMAGE_ID:latest .
+          docker build -f Backend/MusicMigrater/Dockerfile -t $IMAGE_ID:latest Backend/
           docker push $IMAGE_ID:latest
